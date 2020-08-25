@@ -72,7 +72,7 @@ def spikes_position(trajectory):
     return(list1)
 
 
-def accurate_startles(tr, temp, groupsize, rep):
+def accurate_startles_frame(tr, temp, groupsize, rep):
     list1 = spikes_position(tr)
     loom = loom_frame(temp, groupsize, rep)
     list2 = [value for value in list1 if value < (loom[0] + 1000) and value > (loom[0]) ]

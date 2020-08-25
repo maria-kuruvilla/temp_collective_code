@@ -24,12 +24,6 @@ import trajectorytools.plot as ttplot
 import trajectorytools.socialcontext as ttsocial
 from trajectorytools.constants import dir_of_data
 
-sigma_values = 1.5
-trajectories_file_path = 'G:/My Drive/CollectiveBehavior_Thermal_Experiments/Tracked/9/4/session_GS_4_T_9_2/trajectories_wo_gaps/trajectories_wo_gaps.npy'
-tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True, smooth_params={'sigma': sigma_values}).normalise_by('body_length')
-tr.new_time_unit(tr.params['frame_rate'], 'seconds')
-
-frame_range = range(tr.s.shape[0])
 
 def track_check(tr, temp, group, rep):
     frame_range = range(tr.s.shape[0])
@@ -63,28 +57,26 @@ for i in temperature:
             
             
             if j==1:
-                try:
-                    trajectories_file_path = 'G:/My Drive/CollectiveBehavior_Thermal_Experiments/Tracked/'+str(i)+'/' +str(j)+'/session_GS_'+str(j)+'_T_'+str(i)+'_'+str(k+1)+'/trajectories/trajectories.npy'
-                    
-                except FileNotFoundError:
-                    print('File not found')
-                    continue
+                trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories.npy'
+                
             
                     
                 
             else:
-                try:
-                    trajectories_file_path = 'G:/My Drive/CollectiveBehavior_Thermal_Experiments/Tracked/'+str(i)+'/' +str(j)+'/session_GS_'+str(j)+'_T_'+str(i)+'_'+str(k+1)+'/trajectories_wo_gaps/trajectories_wo_gaps.npy'
+                trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories_wo_gaps.npy'
             
-                except FileNotFoundError:
-                    print('File not found')
-                    continue
                 
             
             sigma_values = 1.5 #smoothing parameter
-            tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
-            tr.new_time_unit(tr.params['frame_rate'], 'seconds') # changing time unit to seconds
-            track_check(tr, i, j, k+1)
+            try:
+                tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
+                tr.new_time_unit(tr.params['frame_rate'], 'seconds') # changing time unit to seconds
+                track_check(tr, i, j, k+1)
+            except FileNotFoundError:
+                print('File not found')
+                continue
+
+            
             
         jj= jj + 1
         
