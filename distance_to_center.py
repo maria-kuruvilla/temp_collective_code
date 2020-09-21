@@ -91,7 +91,7 @@ for i in temperature:
 
         for k in replication:
             
-            input_file = out_dir + str(k+1) + '.p'
+            input_file = out_dir + str(k+1) + '_nosmooth_noBL.p'
             
             try:
                 tr = pickle.load(open(input_file, 'rb')) # 'rb is for read binary

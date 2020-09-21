@@ -40,7 +40,7 @@ parser = argparse.ArgumentParser()
 #     - the value does not match the type
 # and if a flag is not given it will be filled with the default.
 parser.add_argument('-a', '--a_string', default='hi', type=str)
-parser.add_argument('-b', '--integer_b', default=3, type=int)
+parser.add_argument('-b', '--integer_b', default=11, type=int)
 parser.add_argument('-c', '--float_c', default=1.5, type=float)
 parser.add_argument('-v', '--verbose', default=True, type=boolean_string)
 # Note that you assign a short name and a long name to each argument.
@@ -57,7 +57,7 @@ temperature = range(9,30,4)
 group = [1,2,4,8,16]
 
 #latest tracked replicate
-replication =range(args.integer_b) # number of replicates per treatment
+replication = range(args.integer_b) # number of replicates per treatment
 
 #output parent directory
 parent_dir = '../../output/temp_collective/roi/'
@@ -74,7 +74,9 @@ for i in temperature:
                 
                 trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories.npy'
                 
-            
+            if j == 32:
+                trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories_wo_identities.npy'
+
                     
                 
             else:
@@ -85,14 +87,22 @@ for i in temperature:
             
             sigma_values = 1.5 #smoothing parameter
             try:
-                tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
+                tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True).normalise_by('body_length')#, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
+                tr1 = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True)#.normalise_by('body_length')#, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
+                tr2 = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
             except FileNotFoundError:
                 print('File not found')
                 print(i,j,k+1)
                 continue
 
             tr.new_time_unit(tr.params['frame_rate'], 'seconds') # changing time unit to seconds
+            tr1.new_time_unit(tr.params['frame_rate'], 'seconds') # changing time unit to seconds
+            tr2.new_time_unit(tr.params['frame_rate'], 'seconds') # changing time unit to seconds
             
+            out_fn = out_dir + str(k+1) + '_nosmooth.p'
+            pickle.dump(tr, open(out_fn, 'wb')) # 'wb' is for write binary
+            out_fn = out_dir + str(k+1) + '_nosmooth_noBL.p'
+            pickle.dump(tr, open(out_fn, 'wb')) # 'wb' is for write binary
             out_fn = out_dir + str(k+1) + '.p'
             pickle.dump(tr, open(out_fn, 'wb')) # 'wb' is for write binary
 

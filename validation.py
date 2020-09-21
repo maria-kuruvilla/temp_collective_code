@@ -85,8 +85,8 @@ args = parser.parse_args()
 parent_dir = '../../output/temp_collective/roi'
 
 input_dir = parent_dir + '/' + str(args.integer_b1) + '/' + str(args.integer_b2) + '/' 
-input_file = input_dir + str(args.integer_b3) + '.p'
-sigma_values = 1.5 #smoothing parameter
+input_file = input_dir + str(args.integer_b3) + '_nosmooth.p'
+#sigma_values = 1.5 #smoothing parameter
 try:
     tr = pickle.load(open(input_file, 'rb')) # 'rb is for read binary
 except FileNotFoundError:
@@ -95,5 +95,5 @@ except FileNotFoundError:
     pass
 track_check(tr, args.integer_b1, args.integer_b2, args.integer_b3)
 track_check_acc(tr,args.integer_b1,args.integer_b2,args.integer_b3)
-print(spikes_position(tr))
+#print(spikes_position(tr))
 plt.show()

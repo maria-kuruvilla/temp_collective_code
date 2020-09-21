@@ -63,7 +63,7 @@ if args.a_string=='local_pol_m':
 	y_label = 'Local polarization'
 	xx = 1
 if args.a_string=='dtc':
-	y_label = 'Distance to center \n (Body Length)'
+	y_label = 'Distance to center \n (pixels)'
 
 
 

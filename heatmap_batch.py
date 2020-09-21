@@ -76,7 +76,7 @@ for i in temperature:
         
         for k in replication:
             
-            input_file = out_dir + str(k+1) + '.p'
+            input_file = out_dir + str(k+1) + '_nosmooth_noBL.p'
             
             try:
                 tr = pickle.load(open(input_file, 'rb')) # 'rb is for read binary
@@ -107,8 +107,8 @@ for i in temperature:
         jj = jj +1
         #plt.show()
     ii = ii +1
-out_fig_dir = '../../output/temp_collective/roi_figures/heatmap'
-ax.set_title('Positional Distribution',fontsize=16)
+out_fig_dir = '../../output/temp_collective/roi_figures/heatmap_noBL'
+#ax.set_title('Positional Distribution',fontsize=16)
 figv.savefig(out_fig_dir, dpi = 300)
 """
 input_dir = parent_dir + '/' + str(args.integer_b1) + '/' + str(args.integer_b2) + '/' 
