@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon May  4 09:42:34 2020
+edited on 10/08/2020
 
 @author: Maria Kuruvilla
 goal - one function to return trajectory and one function to plot the tracking results (positions)
@@ -37,11 +38,11 @@ def track_check_position(tr, temp, group, rep): #replicates start from 1
 
 def trajectory_track_check(i, j , k): #takes replicates starting from 1
     if j == 1:
-        trajectories_file_path = '../../data/temp_collective/'+str(i)+'/' +str(j)+'/session_GS_'+str(j)+'_T_'+str(i)+'_'+str(k)+'/trajectories.npy'
+        trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k)+'/trajectories.npy'
     else:
-        trajectories_file_path = '../../data/temp_collective/'+str(i)+'/' +str(j)+'/session_GS_'+str(j)+'_T_'+str(i)+'_'+str(k)+'/trajectories_wo_gaps.npy'
+        trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k)+'/trajectories_wo_gaps.npy'
     sigma_values = 1.5 #smoothing parameter
-    tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, center=True, smooth_params={'sigma': sigma_values}).normalise_by('body_length') # normalizing by body length
+    tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, 		center=True).normalise_by('body_length')#, smooth_params={'sigma': 	sigma_values}).normalise_by('body_length') # normalizing by body length
     tr.new_time_unit(tr.params['frame_rate'], 'seconds') # changing time unit to seconds
     track_check_position(tr,i,j,k)
     return(tr) 

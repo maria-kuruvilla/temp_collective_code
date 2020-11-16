@@ -67,7 +67,7 @@ hist2d = []
 vmin = 0
 vmax = 0
 
-hist2d.append(np.histogram2d(x[~np.isnan(x)], y[~np.isnan(y)], [200, 20])[0])
+hist2d.append(np.histogram2d(x[~np.isnan(x)], y[~np.isnan(y)], [20, 20])[0])
 
 # Plot distributions of positions in the arena
 figv, ax_hist = plt.subplots(1,figsize=(15,7), sharey=True, sharex=True)
@@ -85,6 +85,6 @@ ax_hist.imshow(p.filled(0), interpolation = 'none',vmin=vmin, vmax=vmax,origin =
 ax_hist.set_aspect(0.004)
 ax_hist.set_xlabel('Speed')
 ax_hist.set_ylabel('Acceleration')
-out_dir = parent_dir = '../../output/temp_collective/roi_figures/speed_acc_heatmap.png'
+out_dir = parent_dir = '../../output/temp_collective/roi_figures/speed_acc_heatmap_masked_4.png'
 figv.savefig(out_dir, dpi = 300)
 plt.show()

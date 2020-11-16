@@ -102,9 +102,9 @@ for i in temperature:
             out_fn = out_dir + str(k+1) + '_nosmooth.p'
             pickle.dump(tr, open(out_fn, 'wb')) # 'wb' is for write binary
             out_fn = out_dir + str(k+1) + '_nosmooth_noBL.p'
-            pickle.dump(tr, open(out_fn, 'wb')) # 'wb' is for write binary
+            pickle.dump(tr1, open(out_fn, 'wb')) # 'wb' is for write binary
             out_fn = out_dir + str(k+1) + '.p'
-            pickle.dump(tr, open(out_fn, 'wb')) # 'wb' is for write binary
+            pickle.dump(tr2, open(out_fn, 'wb')) # 'wb' is for write binary
 
         jj= jj + 1
         

@@ -4,8 +4,8 @@ ________________________________________________________________________________
 
 batch_analysis.py 
 
-input: G:/My Drive/CollectiveBehavior_Thermal_Experiments/Tracked
-output: C:/Users/Maria Kuruvilla/Documents/output
+input: ../../data/temp_collective/roi/
+output: ../../output/temp_collective/roi/
 description: It loads all the trajectories in the experiment and calculates
              the average and standard deviation of speed, acceleration, average 
              nearest neighbor distance, latency, number of startles. It plots
@@ -60,4 +60,13 @@ description: For a given video, it calculates the average distance between every
              fish and its nearest neighbor throughout the video. It returns the 
              average for all fish
 
+________________________________________________________________________________
+
+batch_analysis_masked.py 
+
+input: ../../data/temp_collective/roi/
+output: ../../output/temp_collective/roi/
+description: It loads all the trajectories from the tracked videos and calculates
+             the average and standard deviation of speed, acceleration, average 
+             nearest neighbor distance, latency, number of startles, etc. with data where values 		     greater than a certain distance from the center of tank has been masked to reduce   		     edge effects. 
 _________________________________________________________________________________

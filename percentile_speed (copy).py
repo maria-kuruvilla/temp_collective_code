@@ -1,6 +1,10 @@
 """
-Goal - to enter the temp, group size and replicate and func should return a histogram of speed
-""" 
+Goal - To calculate x percentile speed for each group size and temperature.
+
+Created - 10/20/20
+"""
+
+
 
 import os
 import pathlib
@@ -19,45 +23,6 @@ from trajectorytools.constants import dir_of_data
 import csv
 import pickle
 import argparse
-
-
-def speed_histogram(x): 
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    #speed_pdf, speed = np.histogram(x,bins=10,density=True)
-    #plt.plot(speed,np.log(speed_pdf))
-    ax.hist(x, density=True, bins=30, log = True)
-    #ax.set_xscale('log')
-    #ax.set_xlim(left = 5)
-    #ax.set_ylim([0,0.0002])
-    ax.set_xlabel('Speed (BL/s)')
-    ax.set_ylabel('Probability')
-    #plt.show()
-    #plt.xticks(ticks = [10,20,100,300], labels = [10,20,100,300])
-    
-    out_dir = parent_dir = '../../output/temp_collective/roi_figures/speed_pdf_log_lin_no_smooth_masked.png'
-    fig.savefig(out_dir, dpi = 300)
-    return(ax)
-    
-
-def acc_histogram(y): #replicates start from 1
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    
-    ax.hist(y, density=True, bins=100, log = True)
-    #ax.set_xscale('log')
-    #plt.xticks(ticks = [10,100,500,1000,2000,5000], labels = [10,100,500,1000,2000,5000])
-    #ax.set_xlim(left = 5)
-    #ax.set_ylim([0,0.0002])
-    ax.set_xlabel('Acceleration')
-    ax.set_ylabel('Probability')
-    #ax.set_title('Temp:' + str(temp) + ' Group:' + str(group) + ' Replicate:' + str(rep))
-    out_dir = parent_dir = '../../output/temp_collective/roi_figures/acc_pdf_log_lin_no_smooth_masked.png'
-    fig.savefig(out_dir, dpi = 300)
-    return(ax)
-
 
 def position(tr):
     return(tr.s)
@@ -106,8 +71,9 @@ parser = argparse.ArgumentParser()
 #     - the value does not match the type
 # and if a flag is not given it will be filled with the default.
 parser.add_argument('-a', '--a_string', default='hi', type=str)
-parser.add_argument('-b', '--integer_b', default=10, type=int)
+parser.add_argument('-b', '--integer_b', default=90, type=int)
 parser.add_argument('-c', '--float_c', default=1.5, type=float)
+parser.add_argument('-d', '--integer_d', default=1, type=int)
 parser.add_argument('-v', '--verbose', default=True, type=boolean_string)
 # Note that you assign a short name and a long name to each argument.
 # You can use either when you call the program, but you have to use the
@@ -115,6 +81,9 @@ parser.add_argument('-v', '--verbose', default=True, type=boolean_string)
 
 # get the arguments
 args = parser.parse_args()
+
+#functions
+    
 
 temperature = range(9,30,4)
 
@@ -124,48 +93,71 @@ group = [1,2,4,8,16]
 
 
 
-replication = range(args.integer_b) # number of replicates per treatment
+replication = range(10) # number of replicates per treatment
+
+
+percentile_speed = np.empty([len(temperature), len(group)])
+percentile_speed.fill(np.nan)
+
+std_percentile_speed = np.empty([len(temperature), len(group)])
+std_percentile_speed.fill(np.nan)
+
+
 
 #output parent directory
-parent_dir = '../../output/temp_collective/roi'
+parent_dir = '../../data/temp_collective/roi'
 
 ii = 0 # to keep count of temperature
 
 #frames = 5000 #number of frames for which annd is calculated
-x = [] #append speed values to this 
-y=[]
+
 for i in temperature:
     jj = 0 # to keep count of groups
     for j in group:
         out_dir = parent_dir + '/' + str(i) + '/' + str(j) + '/' 
+        
+        average_replicate_percentile_speed = np.empty([len(replication), 1])
+        average_replicate_percentile_speed.fill(np.nan)
+
         for k in replication:
             
-            input_file = out_dir + str(k+1) + '_nosmooth.p'
             if j == 1:
-                trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories.npy'
-            else:
-                trajectories_file_path = '../../data/temp_collective/roi/'+str(i)+'/' +str(j)+'/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories_wo_gaps.npy'
+                input_file = out_dir + '/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories.npy'
+            else:   
+                input_file = out_dir + '/GS_'+str(j)+'_T_'+str(i)+'_roi_'+str(k+1)+'/trajectories_wo_gaps.npy'
+                
+            
+            
+            
             try:
-                tr = tt.Trajectories.from_idtrackerai(trajectories_file_path, 		           center=True).normalise_by('body_length')
+                tr = tt.Trajectories.from_idtrackerai(input_file, 		           center=True).normalise_by('body_length')
                 tr.new_time_unit(tr.params['frame_rate'], 'seconds')		
             
             except FileNotFoundError:
                 print(i,j,k)
                 print('File not found')
                 continue
-            #for m in range(tr.speed.shape[1]):
-             #   x= np.r_[x,tr.speed[:,m]]
-            yy = np.ma.reshape(filter_acc(tr,5),(filter_acc(tr,5).shape[0]*filter_acc(tr,5).shape[1]))
-            xx = np.ma.reshape(filter_speed(tr,5),(filter_speed(tr,5).shape[0]*filter_speed(tr,5).shape[1]))
-            x = np.ma.mr_[x,xx] 
-            y = np.ma.mr_[y,yy] 
+             
+            average_replicate_percentile_speed[k] = np.percentile(filter_speed(tr,5),args.integer_b)
+            
+            
+            
+        
+        percentile_speed[ii, jj] = np.nanmean(average_replicate_percentile_speed)
+        std_percentile_speed[ii,jj] = np.nanstd(average_replicate_percentile_speed)
 
-""" 
-            for m in range(tr.acceleration.shape[1]):
-                y= np.r_[y,filter_acc(tr,5)[:,m]]
-                x= np.r_[x,filter_speed(tr,5)[:,m]]
-"""
-acc_histogram(y)
-speed_histogram(x)
-#acc_histogram(tr, args.integer_b1, args.integer_b2, args.integer_b3)
-plt.show()
+        
+        
+        jj= jj + 1
+        
+    ii = ii + 1
+
+out_dir = '../../output/temp_collective/roi/'
+
+# save it as a pickle file
+p_c_fn1 = out_dir + 'percentile_speed' + str(args.integer_b)+ '.p'
+pickle.dump(percentile_speed, open(p_c_fn1, 'wb')) # 'wb' is for write binary
+
+p_c_fn2 = out_dir + 'percentile_speed' + str(args.integer_b) + '_std.p'
+pickle.dump(std_percentile_speed, open(p_c_fn2, 'wb')) # 'wb' is for write binary
+ 
